@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tenun Sambas - Toko Online Tenun Sambas Asli</title>
+  <script src="https://cdn.tailwindcss.com\"></script>
+  <style>
+    /* Custom scrollbar for product list */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e94600;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #eee3b5;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c5956b;
+    }
+
+    /* Transition for modal fade */
+    .modal-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.3s ease;
+    }
+    /* Editable fields styles */
+    .editable:hover {
+      outline: 1px dashed #f0d47a;
+      cursor: text;
+      transition: outline 0.2s ease;
+    }
+    /* Cart badge */
+    .cart-badge {
+      @apply bg-red-600 rounded-full text-white text-xs w-5 h-5 flex items-center justify-center absolute -top-1 -right-1;
+    }
+  </style>
+</head>
+<body class="bg-orange-50 flex flex-col min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-orange-700 text-white shadow-md sticky top-0 z-30">
+    <div class="container mx-auto flex justify-between items-center px-4 py-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-orange-900 flex items-center justify-center font-bold text-lg select-none">
+          TS
+        </div>
+        <h1 class="font-bold text-xl cursor-default select-none">Tenun Sambas</h1>
+      </div>
+      <ul class="hidden md:flex space-x-6 text-sm font-semibold">
+        <li><button class="hover:text-orange-300" onclick="scrollToSection('beranda')">Beranda</button></li>
+        <li><button class="hover:text-orange-300" onclick="scrollToSection('produk')">Produk</button></li>
+        <li><button class="hover:text-orange-300" onclick="scrollToSection('tentangkami')">Tentang Kami</button></li>
+      </ul>
+      <div class="flex items-center space-x-4 relative">
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Cari produk..."
+          class="rounded-full px-4 py-1 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          aria-label="Cari produk"
+          oninput="searchProducts()"
+        />
+        <button onclick="searchProducts()" aria-label="Cari">
+          <svg class="w-5 h-5 text-orange-100 hover:text-orange-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.95-5.65a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
+        <!-- Cart Button -->
+        <button id="cartBtn" onclick="toggleCart()" aria-label="Keranjang Belanja" class="relative focus:outline-none">
+          <svg class="w-6 h-6 text-orange-100 hover:text-orange-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 7M7 13l-2 4h12M16 17a2 2 0 11-4 0"/>
+          </svg>
+          <div id="cartCount" class="cart-badge hidden" aria-live="polite" aria-atomic="true">0</div>
+        </button>
+      </div>
+      <!-- Mobile menu toggler (optional later) -->
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <section id="beranda" class="bg-orange-700 text-white py-14 px-4 md:px-12 flex flex-col md:flex-row items-center md:justify-between gap-12 md:gap-6 max-w-7xl mx-auto">
+    <div class="flex flex-col max-w-xl space-y-6">
+      <h2 class="text-4xl md:text-5xl font-extrabold select-none editable" contenteditable="true" aria-label="Judul hero">Tenun Sambas Asli</h2>
+      <p class="text-lg md:text-xl editable" contenteditable="true" aria-label="Deskripsi hero">
+        Warisan budaya Kalimantan Barat yang dibuat dengan teknik tradisional dan motif khas Sambas.
+      </p>
+      <button onclick="scrollToSection('produk')" class="bg-white text-orange-700 font-semibold rounded-full py-3 px-6 w-max shadow-lg hover:bg-orange-100 transition" aria-label="Belanja sekarang">
+        Belanja Sekarang
+      </button>
+    </div>
+    <div class="max-w-xl w-full rounded-xl overflow-hidden shadow-lg bg-white">
+      <img 
+        src="gambar1.jpeg" 
+        alt="Produk utama kain tenun Sambas berwarna merah, hijau, dan krem dengan motif khas tenun Sambas tergantung dan dilipat dalam sebuah ruangan terang"
+        class="object-cover w-full h-[360px]"
+        onerror="this.onerror=null;this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/88bffcf2-4ab1-4777-862e-2aa76e771eda.png';"
+      />
+    </div>
+  </section>
+
+  <!-- Produk Section -->
+  <section id="produk" class="my-16 max-w-7xl mx-auto px-4 md:px-12">
+    <h3 class="text-3xl font-bold mb-6 border-b border-orange-600 pb-2 select-none">Produk</h3>
+    <p class="mb-6 text-base md:text-lg max-w-2xl editable" contenteditable="true" aria-label="Deskripsi produk">
+      Pilih dari koleksi 13 motif tenun Sambas asli kami. Klik gambar untuk melihat detail dan tambahkan ke keranjang.
+    </p>
+    <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-h-[80vh] overflow-y-auto pr-1" aria-live="polite" aria-label="Daftar produk tenun sambas">
+      <!-- Produk items akan dimasukkan oleh javascript -->
+    </div>
+  </section>
+
+  <!-- Tentang Kami Section -->
+  <section id="tentangkami" class="max-w-8xl mx-auto px-4 md:px-18\ mb-16">
+    <h3 class="text-5xl font-bold mb-6 text-center ">Tentang Kami</h3>
+    <img src = "menenun.jpeg" alt ="Tenun Sambas" style ="width:500px; float:right; margin-left:50px; border-radius:30px;">
+    <img src = "benang.jpeg" alt ="Tenun Sambas" style ="width:390px; float:right; margin-left:50px; border-radius:30px;">
+    <p class="text-base md:text-lg max-w-5xl editable" contenteditable="true" aria-label="Deskripsi tentang kami">
+      Tenun Sambas adalah produsen dan penjual kain tenun tradisional khas Sambas, Kalimantan Barat. Dengan mengusung teknik menenun secara manual yang diwariskan secara turun-temurun, kami berkomitmen untuk melestarikan warisan budaya leluhur dalam setiap helai kain yang kami hasilkan. Setiap produk yang kami tawarkan dibuat dengan penuh ketelitian dan cinta terhadap budaya, memadukan benang pilihan dan motif khas seperti bunga bintang, pucuk rebung, dan corak alam lainnya. Kami percaya bahwa keindahan tenun bukan hanya terletak pada visualnya, tetapi juga dalam nilai sejarah dan budaya yang dibawanya. Dukung produk lokal dan jadilah bagian dari pelestarian budaya Indonesia bersama kami.
+    </p>
+  </section>
+
+<!-- Hubungi Kami Section -->
+<section class="bg-gradient-to-r from-[#e94600] to-[#a8432e] text-white py-12 text-center">
+  <h2 class="text-3xl font-bold mb-4">Hubungi Kami</h2>
+  <p class="mb-8 text-lg">Untuk pertanyaan tentang produk, kerja sama, atau pemesanan custom, silakan hubungi kami melalui salah satu cara berikut:</p>
+
+  <div class="flex flex-col md:flex-row justify-center gap-10 mb-10">
+    <!-- Instagram-->
+    <div class="contact-item">
+  <img src = "ikon ig.jpeg" alt ="Tenun Sambas" style ="width:25px; float:left; margin-left:20px; border-radius:10px;class="sosmed-link">
+  <a href="https://www.instagram.com/woven_bysambas?igsh=dXJ2eHdvdXRhYnd4" target="_blank"
+  class="sosmed-link">@woven_bysambas</a>
+</div>
+  <!-- Tiktok-->
+<div class="contact-item">
+ <img src = "ikon tiktok1.jpeg" alt ="Tenun Sambas" style ="width:25px; float:left; margin-left:20px; border-radius:10px;">
+  <a href="https://www.tiktok.com/@woven_bysambas?_t=ZS-8xpCLUVDfUN&_r=1" target="_blank"
+  class="sosmed-link">@woven_bysambas</a>
+</div>
+    <!-- Alamat -->
+    <div class="flex items-center gap-3">
+      <i class="fas fa-map-marker-alt text-2xl"></i>
+      <span>Jl. Raya Semberang, Sumber Harapan, Kecamatan Sambas, Kabupaten Sambas, Kalimantan Barat</span>
+    </div>
+  </div>
+
+  <!-- Ikon Sosial Media -->
+  <div class="flex justify-center gap-6 text-2xl">
+    <a href="https://instagram.com/tenunsambas" target="_blank" class="hover:text-pink-400">
+      <i class="fab fa-instagram"></i>
+    </a>
+    <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-green-400">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+    <a href="https://tiktok.com/@tenunsambas" target="_blank" class="hover:text-white">
+      <i class="fab fa-tiktok"></i>
+    </a>
+  </div>
+</section>
+
+  <!-- Modal Produk Detail -->
+  <div id="productModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 modal-hidden z-40" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-lg relative">
+      <button aria-label="Tutup detail produk" onclick="closeProductModal()" class="absolute right-4 top-3 text-orange-700 hover:text-orange-900 text-3xl font-bold focus:outline-none">&times;</button>
+      <div class="flex flex-col md:flex-row">
+        <div class="w-full md:w-1/2 p-4 flex items-center justify-center">
+          <img id="modalImage" src="" alt="" class="rounded-lg shadow-md max-h-[400px] w-auto object-contain" onerror="this.onerror=null;this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d7621fc9-ffee-47aa-894d-6b5d9f3a2007.png';" />
+        </div>
+        <div class="w-full md:w-1/2 p-6 flex flex-col gap-4">
+          <h4 id="modalTitle" class="text-xl font-bold editable" contenteditable="true" aria-label="Judul produk detail"></h4>
+          <p id="modalDesc" class="editable text-gray-700" contenteditable="true" aria-label="Deskripsi produk detail"></p>
+          <div>
+            <label for="modalPrice" class="block font-semibold mb-1">Harga (IDR):</label>
+            <input id="modalPrice" type="number" min="0" class="w-28 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500" aria-label="Harga produk" />
+          </div>
+          <div class="mt-auto">
+            <button id="addToCartBtn" class="bg-orange-700 text-white rounded-md w-full py-3 font-bold hover:bg-orange-800 transition" aria-label="Tambah produk ke keranjang">
+              Tambah ke Keranjang
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keranjang Sidebar -->
+  <aside id="cartSidebar" class="fixed top-0 right-0 h-full w-96 bg-white shadow-lg border-l border-orange-300 transform translate-x-full transition-transform z-50 flex flex-col" aria-label="Keranjang belanja">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-orange-300">
+      <h3 class="text-xl font-bold text-orange-700 select-none">Keranjang Belanja</h3>
+      <button aria-label="Tutup keranjang" onclick="toggleCart()" class="text-orange-700 hover:text-orange-900 text-2xl font-bold focus:outline-none">&times;</button>
+    </header>
+    <div id="cartItems" class="flex-1 overflow-auto px-6 py-4" aria-live="polite" aria-atomic="true">
+      <p class="text-center text-gray-500">Keranjang kosong</p>
+    </div>
+    <footer class="border-t border-orange-300 px-6 py-4">
+      <div class="flex justify-between mb-4">
+        <span class="font-semibold text-lg text-orange-700">Total:</span>
+        <span id="cartTotal" class="font-extrabold text-lg text-orange-800">Rp 0</span>
+      </div>
+      <button onclick="openCheckout()" class="bg-orange-700 text-white w-full p-3 rounded-md font-bold hover:bg-orange-800 transition" aria-label="Lanjut ke pembayaran" disabled id="checkoutBtn">
+        Lanjut ke Pembayaran
+      </button>
+    </footer>
+  </aside>
+
+  <!-- Overlay for cart -->
+  <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-30 hidden z-40" onclick="toggleCart()"></div>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 modal-hidden z-50" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="bg-white rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-lg relative p-6">
+      <button aria-label="Tutup checkout" onclick="closeCheckout()" class="absolute right-4 top-3 text-orange-700 hover:text-orange-900 text-3xl font-bold focus:outline-none">&times;</button>
+      <h4 id="checkoutTitle" class="text-2xl font-bold mb-4 text-orange-700 select-none">Checkout</h4>
+      <form id="checkoutForm" class="flex flex-col gap-4" onsubmit="handleOrder(event)">
+        <section aria-label="Daftar produk yang dipesan">
+          <h5 class="font-semibold mb-2">Pesanan Anda:</h5>
+          <ul id="checkoutOrderList" class="max-h-48 overflow-auto border border-orange-200 rounded p-2 text-gray-700 text-sm"></ul>
+        </section>
+
+        <section aria-label="Data pelanggan" class="space-y-2">
+          <h5 class="font-semibold">Data Pengiriman:</h5>
+          <input type="text" id="customerName" placeholder="Nama lengkap" required class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" aria-label="Nama lengkap" />
+          <input type="tel" id="customerPhone" placeholder="Nomor telepon" required pattern="\d+" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" aria-label="Nomor telepon" />
+          <textarea id="customerAddress" placeholder="Alamat lengkap" required class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" rows="3" aria-label="Alamat lengkap"></textarea>
+        </section>
+
+        <section aria-label="Metode pembayaran" class="space-y-2">
+          <h5 class="font-semibold">Metode Pembayaran:</h5>
+          <div>
+            <label class="inline-flex items-center space-x-2">
+              <input type="radio" name="paymentMethod" value="cod" checked aria-checked="true" required />
+              <span>Bayar di Tempat (COD)</span>
+            </label>
+          </div>
+          <div>
+            <label class="inline-flex items-center space-x-2">
+              <input type="radio" name="paymentMethod" value="bank" aria-checked="false" />
+              <span>Transfer Bank</span>
+            </label>
+            <div id="bankDetails" class="mt-2 ml-5 hidden text-sm text-gray-600">
+              <p>Bank BRI: 1234567890 a.n. Tenun Sambas</p>
+              <p>Bank Mandiri: 0987654321 a.n. Tenun Sambas</p>
+            </div>
+          </div>
+        </section>
+
+        <button type="submit" class="bg-orange-700 text-white p-3 rounded font-bold hover:bg-orange-800 transition mt-4" aria-label="Pesan sekarang">
+          Pesan Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Data Produk - 13 Produk Tenun Sambas
+    const products = [
+      {
+        id: 1,
+        title: "Tas dari Kain Tenun Sambas",
+        description: "Tas simpel tapi beda dari yang lain. Dibuat dari kain tenun khas Sambas yang penuh warna dan cerita. Ringan, muat banyak, dan cocok banget buat kamu yang suka tampil gaya tapi tetap cinta produk lokal..",
+        price: 350000,
+        image: "tas.jpeg",
+        alt: "Kain tenun Sambas motif Mega Mendung warna merah dan hijau"
+      },
+      {
+        id: 2,
+        title: "Rompi/Atasan cowok dari kain Tenun Sambas",
+        title: "Motif Batu",
+        description: "Kain tenun tradisional khas Kalimantan Barat, dibuat secara handmade oleh pengrajin lokal. Motif etnik yang elegan, bahan berkualitas tinggi, dan cocok untuk berbagai kebutuhan busana atau dekorasi. Tampil anggun sambil melestarikan budaya!.",
+        price: 650000,
+        image: "rompi.jpeg",
+        alt: "Kain tenun Sambas motif batu"
+      },
+      {
+        id: 3,
+        title: "Kain Tenun Sambas Motif Pucuk Rebung",
+        description: "Motif Pucuk Rebung. Kain ini cocok banget  buat kamu yang suka tampil anggun dengan sentuhan budaya yang bermakna. Dibuat secara tradisional oleh tangan-tangan terampil pengrajin Sambas, kain ini terasa lembut, adem, dan nyaman dipakai. Pas untuk dijadikan baju adat, kebaya, rok, atau bahkan oufit mode etnik.",
+        price: 550000,
+        image: "kain1.jpeg",
+        alt: "Kain tenun Sambas motif pucuk rebung"
+      },
+      {
+        id: 4,
+        title: "Rok motif Serong Apam",
+        description: "Rok Motif Serong Apam dengan warna maroon, cocok untuk bawahan atasan kondangan anda .",
+        price: 550000,
+        image: "serongapam1.jpeg",
+        alt: "Rok motif Serong Apams"
+      },
+      {
+        id: 5,
+        title: "Kain Tenun Sambas Motif Pucuk Burung Enggang",
+        description: "Kain dengan motif Pucuk Burung Enggang khas Kalimantan. Dibuat secara manual oleh para pengrajin ahli di Kabupaten Sambas, Kalimantan Barat. Setiap helai kain menampilkan ketelitian dan kearifan lokal yang diturunkan secara turun-temurun.",
+        price: 550000,
+        image: "kain2.jpeg",
+        alt: "Kain tenun motif Pucuk Burung Enggang"
+      },
+      {
+        id: 6,
+        title: "Kain Tenun Sambas Motif Motif Cual",
+        description: "Kain tenun khas Sambas dengan motif Cual. Ditenun secara tradisional dengan detail halus, cocok untuk bahan busana, souvenir, hingga koleksi etnik eksklusif, anggun, berkelas, dan sarat nilai budaya. ",
+        price: 550000,
+        image: "kain3.jpeg",
+        alt: "Kain Tenun Sambas Motif Motif Cual"
+      },
+      {
+        id: 7,
+        title: "Kain Tenun Sambas Motif Bunga Batu",
+        description: "Kain tenun ini punya motif Bunga Batu yang unik, Ditenun langsung oleh pengrajin Sambas, kain ini lembut, adem, dan cocok dijadikan baju, rok, atau outfit etnik modern lainnya. Motifnya simpel tapi punya makna dalam—seperti kamu yang kuat tapi tetap lembut.",
+        price: 550000,
+        image: "kain4.jpeg",
+        alt: "Kain Tenun Sambas Motif Bunga Batu"
+      },
+      {
+        id: 8,
+        title: "Tanjak dari Kain Tenun Sambas",
+        description: "Tanjak kain tenun Sambas adalah mahkota tradisional pria Melayu yang memancarkan wibawa dan kebanggaan budaya. Dibuat dari kain tenun asli Sambas yang ditenun secara manual oleh para pengrajin lokal, tanjak ini menjadi perpaduan sempurna antara kekuatan identitas dan keanggunan tradisional.",
+        price: 200000,
+        image: "tanjak.jpeg",
+        alt: "Tanjak dari Kain Tenun Sambas"
+      },
+      {
+        id: 9,
+        title: "Peci dari Kain Tenun Sambas",
+        description: "Kenakan peci yang bukan hanya gaya, tapi juga bernilai budaya. Dukung produk lokal & tampil lebih berkarakter!.",
+        price: 200000,
+        image: "kopiah.jpeg",
+        alt: "Peci dari Kaiin Tenun Sambas"
+      },
+      {
+        id: 10,
+        title: "Dompet dari Kain Tenun Sambas",
+        description: "Lengkapi gaya Anda dengan sentuhan etnik dan elegan. Dompet unik yang tidak hanya fungsional, tapi juga penuh cerita budaya!.",
+        price: 300000,
+        image: "tas2.jpeg",
+        alt: "Dompet dari Kain Tenun Sambas"
+      },
+      {
+        id: 11,
+        title: "Kain Tenun Sambas Motif Serong Apam",
+        description: "Kain Tenun Sambas Motif Serong Apam. Pilih kain tenun yang tak hanya indah, tapi juga bermakna. Serong Apam.",
+        price: 550000,
+        image: "kain6.jpeg",
+        alt: "Kain tenun motif Serong Apam"
+      },
+      {
+        id: 12,
+        title: "Selendang Kain Tenun Sambas",
+        description: "Selendang Kain Tenun Sambas, Syal tenun yang tidak hanya hangat di leher, tapi juga hangatkan semangat untuk melestarikan budaya Indonesia.",
+        price: 200000,
+        image: "selendang1.jpeg",
+        alt: "Kain tenun motif Raja Bunga merah tua"
+      },
+      {
+        id: 13,
+        title: "Kain Tenun Sambas Motif Bunga Bintang",
+        description: "Kain tenun khas Sambas dengan motif bunga bintang yang elegan. Perpaduan warna biru tua dan hijau toska yang mendominasi, disertai sentuhan benang emas yang membentuk pola bunga secara vertikal memberikan kesan mewah dan anggun. Cocok digunakan untuk acara formal maupun sebagai pelengkap busana tradisional.",
+        price: 450000,
+        image: "kain7.jpeg",
+        alt: "Kain tenun kombinasi motif khas Sambas dengan berbagai warna"
+      }
+    ];
+
+    // Keranjang belanja (cart)
+    let cart = {};
+
+    // DOM Elements
+    const productListEl = document.getElementById('productList');
+    const productModal = document.getElementById('productModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalImage = document.getElementById('modalImage');
+    const modalPriceInput = document.getElementById('modalPrice');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    const checkoutModal = document.getElementById('checkoutModal');
+    const checkoutOrderList = document.getElementById('checkoutOrderList');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const customerNameInput = document.getElementById('customerName');
+    const customerPhoneInput = document.getElementById('customerPhone');
+    const customerAddressInput = document.getElementById('customerAddress');
+    const bankDetailsEl = document.getElementById('bankDetails');
+
+    // State for modal current product
+    let currentProductId = null;
+
+    // Initialize product list display function
+    function showProducts(filter = '') {
+      productListEl.innerHTML = '';
+      let filteredProducts = products.filter(p =>
+        p.title.toLowerCase().includes(filter.toLowerCase()) ||
+        p.description.toLowerCase().includes(filter.toLowerCase())
+      );
+      if (filteredProducts.length === 0) {
+        productListEl.innerHTML = '<p class="col-span-full text-center text-gray-600 select-none">Produk tidak ditemukan.</p>';
+        return;
+      }
+
+      filteredProducts.forEach(product => {
+        const card = document.createElement('article');
+        card.className = "bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition flex flex-col";
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `Lihat detail produk ${product.title}`);
+        card.innerHTML = `
+          <div class="aspect-square overflow-hidden rounded-t-lg">
+            <img src="${product.image}" alt="${product.alt}" 
+              class="w-full h-full object-cover" 
+              loading="lazy"
+              onerror="this.onerror=null;this.src='https://placehold.co/400x400?text=Image+Not+Found';"
+            />
+          </div>
+          <div class="p-4 flex flex-col flex-grow">
+            <h4 class="font-semibold editable truncate" contenteditable="true" aria-label="Judul produk ${product.title}">${product.title}</h4>
+            <p class="text-sm mt-1 editable flex-grow" contenteditable="true" aria-label="Deskripsi produk ${product.title}">${product.description}</p>
+            <div class="mt-3 flex items-center justify-between">
+              <span class="text-orange-700 font-bold">${formatCurrency(product.price)}</span>
+              <button class="text-orange-600 font-semibold hover:text-orange-800 focus:outline-none focus:ring-1 focus:ring-orange-400 px-3 py-1 rounded" aria-label="Buka detail produk ${product.title}" onclick="openProductModal(event, ${product.id})">Detail</button>
+            </div>
+          </div>
+        `;
+        // Clicking card or pressing Enter opens modal
+        card.addEventListener('click', () => openProductModal(null, product.id));
+        card.addEventListener('keydown', e => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openProductModal(null, product.id);
+          }
+        });
+
+        productListEl.appendChild(card);
+      });
+    }
+
+    // Format number ke Rupiah
+    function formatCurrency(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
+    }
+
+    // Open product modal & fill data
+    function openProductModal(event, id) {
+      if(event) event.stopPropagation();
+      currentProductId = id;
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      modalTitle.textContent = product.title;
+      modalDesc.textContent = product.description;
+      modalImage.src = product.image;
+      modalImage.alt = product.alt;
+      modalPriceInput.value = product.price;
+
+      // Modal visible
+      productModal.classList.remove('modal-hidden');
+      productModal.classList.add('modal-visible');
+
+      // Focus first editable in modal
+      modalTitle.focus();
+
+      // Focus trap could be added if wanted
+    }
+
+    // Close product modal
+    function closeProductModal() {
+      productModal.classList.remove('modal-visible');
+      productModal.classList.add('modal-hidden');
+      currentProductId = null;
+    }
+
+    // Add or update product in cart
+    addToCartBtn.addEventListener('click', () => {
+      if (currentProductId === null) return;
+      const name = modalTitle.textContent.trim();
+      const desc = modalDesc.textContent.trim();
+      const price = parseInt(modalPriceInput.value);
+      if (!name || !desc || isNaN(price) || price < 0) {
+        alert("Informasi produk tidak valid. Pastikan semua data benar.");
+        return;
+      }
+      // Update product info in products array for persistence of edits
+      const productIndex = products.findIndex(p => p.id === currentProductId);
+      if(productIndex !== -1) {
+        products[productIndex].title = name;
+        products[productIndex].description = desc;
+        products[productIndex].price = price;
+      }
+
+      // Update UI in productList to reflect edits
+      showProducts(document.getElementById('searchInput').value);
+
+      // Add or increase quantity in cart
+      if(cart[currentProductId]) {
+        cart[currentProductId].quantity += 1;
+      } else {
+        cart[currentProductId] = {
+          id: currentProductId,
+          title: name,
+          price: price,
+          quantity: 1
+        };
+      }
+      updateCartUI();
+      closeProductModal();
+      // Automatically open cart to show added item
+      openCart();
+    });
+
+    // Update cart UI
+    function updateCartUI() {
+      cartItemsEl.innerHTML = '';
+      const cartEntries = Object.values(cart);
+      if(cartEntries.length === 0) {
+        cartItemsEl.innerHTML = '<p class="text-center text-gray-500 select-none">Keranjang kosong</p>';
+        cartCountEl.classList.add('hidden');
+        checkoutBtn.disabled = true;
+        cartTotalEl.textContent = "Rp 0";
+        return;
+      }
+
+      cartCountEl.textContent = cartEntries.reduce((acc, p) => acc + p.quantity, 0);
+      cartCountEl.classList.remove('hidden');
+      checkoutBtn.disabled = false;
+
+      let total = 0;
+
+      cartEntries.forEach(item => {
+        total += item.price * item.quantity;
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between mb-4 border-b border-orange-200 pb-2";
+
+        div.innerHTML = `
+          <div class="flex flex-col max-w-[70%]">
+            <strong class="truncate" title="${item.title}">${item.title}</strong>
+            <span class="text-sm text-orange-600">${formatCurrency(item.price)} x ${item.quantity} = ${formatCurrency(item.price * item.quantity)}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button aria-label="Kurangi kuantitas ${item.title}" class="text-orange-700 font-bold hover:text-orange-900 focus:outline-none" onclick="modifyCartItem(${item.id}, -1)">-</button>
+            <span aria-live="polite" aria-atomic="true" class="w-6 text-center">${item.quantity}</span>
+            <button aria-label="Tambah kuantitas ${item.title}" class="text-orange-700 font-bold hover:text-orange-900 focus:outline-none" onclick="modifyCartItem(${item.id}, 1)">+</button>
+            <button aria-label="Hapus ${item.title} dari keranjang" class="text-red-600 hover:text-red-800 focus:outline-none ml-2" onclick="removeCartItem(${item.id})" title="Hapus">×</button>
+          </div>
+        `;
+        cartItemsEl.appendChild(div);
+      });
+      cartTotalEl.textContent = formatCurrency(total);
+    }
+
+    // Modify cart item quantity
+    function modifyCartItem(id, delta) {
+      if(!cart[id]) return;
+      cart[id].quantity += delta;
+      if(cart[id].quantity <= 0) {
+        delete cart[id];
+      }
+      updateCartUI();
+      saveCartStorage();
+    }
+
+    // Remove cart item completely
+    function removeCartItem(id) {
+      if(cart[id]) {
+        delete cart[id];
+        updateCartUI();
+        saveCartStorage();
+      }
+    }
+
+    // Toggle cart sidebar
+    function toggleCart() {
+      if(cartSidebar.style.transform === 'translateX(0%)') {
+        closeCart();
+      } else {
+        openCart();
+      }
+    }
+
+    // Open cart sidebar
+    function openCart() {
+      cartSidebar.style.transform = 'translateX(0%)';
+      cartOverlay.classList.remove('hidden');
+      cartSidebar.focus();
+    }
+
+    // Close cart sidebar
+    function closeCart() {
+      cartSidebar.style.transform = 'translateX(100%)';
+      cartOverlay.classList.add('hidden');
+    }
+
+    // Search products
+    function searchProducts() {
+      const query = document.getElementById('searchInput').value;
+      showProducts(query);
+    }
+
+    // Scroll to section smooth
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior: 'smooth'});
+    }
+
+    // Checkout modal controls
+    function openCheckout() {
+      if(Object.keys(cart).length === 0) return;
+      buildCheckoutList();
+      checkoutModal.classList.remove('modal-hidden');
+      checkoutModal.classList.add('modal-visible');
+      closeCart();
+      customerNameInput.focus();
+    }
+
+    function closeCheckout() {
+      checkoutModal.classList.remove('modal-visible');
+      checkoutModal.classList.add('modal-hidden');
+      // Reset form
+      checkoutForm.reset();
+      bankDetailsEl.classList.add('hidden');
+    }
+
+    // Build checkout order summary
+    function buildCheckoutList() {
+      checkoutOrderList.innerHTML = '';
+      const cartEntries = Object.values(cart);
+      cartEntries.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.title} x ${item.quantity} = ${formatCurrency(item.price * item.quantity)}`;
+        checkoutOrderList.appendChild(li);
+      });
+    }
+
+    // Show/Hide bank details on payment method change
+    checkoutForm.paymentMethod.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if(radio.value === 'bank' && radio.checked) {
+          bankDetailsEl.classList.remove('hidden');
+        } else {
+          bankDetailsEl.classList.add('hidden');
+        }
+      });
+    });
+
+    // Handle final order submission
+    function handleOrder(event) {
+      event.preventDefault();
+      if(Object.keys(cart).length === 0) {
+        alert("Keranjang kosong! Silakan tambah produk sebelum pesan.");
+        return;
+      }
+      // Simple validation done by form required attributes
+      const name = customerNameInput.value.trim();
+      const phone = customerPhoneInput.value.trim();
+      const address = customerAddressInput.value.trim();
+      const paymentMethod = checkoutForm.paymentMethod.value;
+      if(!name || !phone || !address) {
+        alert("Mohon lengkapi data pengiriman.");
+        return;
+      }
+
+      // Mock order processing (in real app, send to backend)
+      const orderSummary = {
+        nama: name,
+        telepon: phone,
+        alamat: address,
+        metodePembayaran: paymentMethod,
+        produk: Object.values(cart).map(item => ({
+          id: item.id,
+          nama: item.title,
+          harga: item.price,
+          jumlah: item.quantity
+        })),
+        total: Object.values(cart).reduce((acc, item) => acc + item.price * item.quantity, 0)
+      };
+
+      console.log("Order diterima:", orderSummary);
+      alert("Terima kasih telah melakukan pemesanan! Pesanan Anda sedang diproses.");
+
+      // Reset cart and UI
+      cart = {};
+      updateCartUI();
+      closeCheckout();
+      showProducts(document.getElementById('searchInput').value);
+    }
+
+    // Save cart in localStorage for persistence
+    function saveCartStorage() {
+      try {
+        localStorage.setItem('tenunSambasCart', JSON.stringify(cart));
+      } catch { /* fail silently */ }
+    }
+
+    // Load cart from localStorage
+    function loadCartStorage() {
+      try {
+        const data = localStorage.getItem('tenunSambasCart');
+        if(data) {
+          const parsed = JSON.parse(data);
+          if(typeof parsed === 'object' && parsed !== null) {
+            cart = parsed;
+          }
+        }
+      } catch { /* fail silently */ }
+    }
+
+    // Initialize app
+    function init() {
+      loadCartStorage();
+      showProducts();
+      updateCartUI();
+
+      // Save cart on window unload
+      window.addEventListener('beforeunload', saveCartStorage);
+
+      // Allow closing modals via Escape key
+      document.addEventListener('keydown', (event) => {
+        if(event.key === 'Escape') {
+          if(!productModal.classList.contains('modal-hidden')) closeProductModal();
+          if(!checkoutModal.classList.contains('modal-hidden')) closeCheckout();
+          if(cartSidebar.style.transform === 'translateX(0%)') closeCart();
+        }
+      });
+    }
+
+    init();
+
+  </script>
+</body>
+</html>
+
